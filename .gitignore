@@ -1,0 +1,4 @@
+py2dr
+*.pyc
+*~
+json/*

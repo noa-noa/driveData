@@ -5,7 +5,8 @@ import shelve
 from scipy.interpolate import interp1d
 from datetime import datetime as dt
 
-class Drive:
+class Drive():
+    drivers = []
     def __init__(self,filename=None):
         if filename == None:
             return
@@ -32,7 +33,11 @@ class Drive:
         self.brake = pd.Series(brake,rng)
         self.rpm = pd.Series(rpm,rng)
         self.accel = pd.Series(accel,rng)
-        self.sec = 5
+        self.sec = 5+1
+        #duration time is 5
+        self.jx = self.ax.diff()
+        self.jy = self.ay.diff()
+        self.jz = self.az.diff()
 
     def stop_points(self):
         zeroPoints =[]
@@ -43,20 +48,30 @@ class Drive:
         num = len(self.speed)
         for i in range(num-sec):
             if float(self.speed[i])<=0.0 and 0.0<float(self.speed[i+1]):
-                value = self.zero_transition(i)
+                value = self.__zero_transition(i)
                 if value:
                     start_points.append(i)
             if float(self.speed[num-i-1])<=0.0 and 0.0<float(self.speed[num-i-2]):
-                value = self.zero_transition(num-i-1,-1)
+                value = self.__zero_transition(num-i-1,-1)
                 if value:
                     stop_points.append(num-i-1)
         stop_points.reverse()
-        self.start_points = start_points
-        self.stop_points = stop_points
-        print(self.start_points)
-        print(self.stop_points)
+        self.start = start_points
+        self.stop = stop_points
 
-    def zero_transition(self,index,sign = 1):
+    def divide_drive(self):
+        if (hasattr(self, 'start') == False):
+            self.stop_points()
+        start = []
+        stop = []
+        for s in self.start:
+            start.append(self.__divide_by_index(s,1))
+        for s in self.stop:
+            stop.append(self.__divide_by_index(s,-1))
+        drive = [start,stop]
+        return drive
+
+    def __zero_transition(self,index,sign = 1):
         sec = self.sec
         for i in range(sec):
             if 0.1 >= float(self.speed[index+(i+1)*sign]):
@@ -64,3 +79,16 @@ class Drive:
         if float(self.speed[index+(i+1)*sign]) < 0.1:
             return False
         return True
+
+    def __divide_by_index(self,start,sign=1):
+        if (sign == 1):
+            sp = self.speed[start:start+self.sec*sign]
+        else:
+            sp = self.speed[start+self.sec*sign:start]
+        ax = self.ax[sp.index[0]:sp.index[-1]]
+        jx = self.jx[sp.index[0]:sp.index[-1]]
+        az = self.az[sp.index[0]:sp.index[-1]]
+        jz = self.jz[sp.index[0]:sp.index[-1]]
+        ay = self.ax[sp.index[0]:sp.index[-1]]
+        jy = self.jx[sp.index[0]:sp.index[-1]]
+        return [sp,ax,jx,az,jz,ay,jy]
