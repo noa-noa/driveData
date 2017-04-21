@@ -2,6 +2,7 @@ from Drive import *
 import os
 import matplotlib.pyplot as plt
 import features as ft
+import numpy as np
 if __name__ != "__main__":
     filenames = os.listdir("json/")
     drivers = [Drive("json/"+str(i)) for i in filenames]
