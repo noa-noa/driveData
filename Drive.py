@@ -66,11 +66,20 @@ class Drive():
         start = []
         stop = []
         for s in self.start:
-            start.append(self.__divide_by_index(s,1))
+            start.append(self.divide_by_index_for_sec(s,1))
         for s in self.stop:
-            stop.append(self.__divide_by_index(s,-1))
+            stop.append(self.divide_by_index_for_sec(s,-1))
         drive = [start,stop]
         return drive
+    def divide_drivings(self):
+        if (hasattr(self, 'start') == False):
+            self.stop_points()
+        drives = []
+
+        for i in range(len(self.start)):
+            if (i < len(self.stop)):
+                drives.append(self.divide_by_index(self.start[i],self.stop[i]))
+        return drives
     def calibration(self):
         self.ax -= self.ax[0]
     def __zero_transition(self,index,sign = 1):
@@ -82,7 +91,7 @@ class Drive():
 #            return False
         return True
 
-    def __divide_by_index(self,start,sign=1):
+    def divide_by_index_for_sec(self,start,sign=1):
         sec = self.sec
         if (sign == 1):
             sp = self.speed[start:start+sec*sign]
@@ -95,4 +104,16 @@ class Drive():
         jz = self.jz[sp.index[0]:sp.index[-1]]
         ay = self.ax[sp.index[0]:sp.index[-1]]
         jy = self.jx[sp.index[0]:sp.index[-1]]
+        return [sp,ax,jx,az,jz,ay,jy]
+
+    def divide_by_index(self,start,stop):
+        sp = self.speed[start:stop+1]
+        time_start = sp.index[0]
+        time_stop = sp.index[-1]
+        ax = self.ax[time_start:time_stop]
+        jx = self.jx[time_start:time_stop]
+        az = self.az[time_start:time_stop]
+        jz = self.jz[time_start:time_stop]
+        ay = self.ax[time_start:time_stop]
+        jy = self.jx[time_start:time_stop]
         return [sp,ax,jx,az,jz,ay,jy]

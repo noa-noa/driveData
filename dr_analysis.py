@@ -51,10 +51,10 @@ def endpoint(drivers):
 
 if __name__ != "__main__":
     from main import *
-    f = np.array(f)
-    startd = standardization(f)
+    #f = np.array(f)
+    #startd = standardization(f)
     # stop
-    tl=an.linkage(an.pdist(startd),"average")
-    an.dendrogram(tl, p=8, truncate_mode='lastp')
-    br = an.to_tree(tl).get_left().pre_order()
+    #tl=an.linkage(an.pdist(startd),"average")
+    #an.dendrogram(tl, p=8, truncate_mode='lastp')
+    #br = an.to_tree(tl).get_left().pre_order()
     # start

@@ -12,3 +12,6 @@ if __name__ != "__main__":
         drives[0]+=drive[0]
         drives[1]+=drive[1]
     f  = ft.features(drives[0])
+    division = []
+    for d in drivers:
+        division+=d.divide_drivings()
