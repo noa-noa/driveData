@@ -13,11 +13,14 @@ class Drive():
         f = open(filename,"r")
         json_dict = json.loads(f.read())
         #ax,ay,az,brake,speed,rpm,accel = [],[],[],[],[],[],[]
-        ax,ay,az,speed,rpm = [],[],[],[],[]
+        ax,ay,az,speed,rpm,distance,latitude,longitude = [],[],[],[],[],[],[],[]
         for js in json_dict:
             #brake.append(js["brake"])
             speed.append(js["speed"])
             rpm.append(js["rpm"])
+            distance.append(js["distance"])
+            latitude.append(js["latitude"])
+            longitude.append(js["longitude"])
             #accel.append(js["accel"])
             for i in range(5):
                 ax.append(js["a"+str(i)+"x"])
@@ -31,6 +34,9 @@ class Drive():
         rng = pd.date_range(dt.fromtimestamp(firsttime),periods=len(speed),freq='1000L')
         self.name = filename
         self.speed = pd.Series(speed,rng)
+        self.dist = pd.Series(distance,rng)
+        self.lat = pd.Series(latitude,rng)
+        self.lon = pd.Series(longitude,rng)
         #self.brake = pd.Series(brake,rng)
         self.rpm = pd.Series(rpm,rng)
         #self.accel = pd.Series(accel,rng)
@@ -104,6 +110,7 @@ class Drive():
         jz = self.jz[sp.index[0]:sp.index[-1]]
         ay = self.ax[sp.index[0]:sp.index[-1]]
         jy = self.jx[sp.index[0]:sp.index[-1]]
+
         return [sp,ax,jx,az,jz,ay,jy]
 
     def divide_by_index(self,start,stop):
