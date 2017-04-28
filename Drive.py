@@ -4,7 +4,7 @@ import pandas as pd
 import shelve
 from scipy.interpolate import interp1d
 from datetime import datetime as dt
-
+from util import *
 class Drive():
     drivers = []
     def __init__(self,filename=None):
@@ -45,6 +45,25 @@ class Drive():
         self.jx = self.ax.diff()
         self.jy = self.ay.diff()
         self.jz = self.az.diff()
+        self.stop_points()
+        if (self.start == []):
+            return
+        firstpoint = self.speed.index[self.start[0]]-1
+        endpoint= self.speed.index[self.stop[-1]]+1
+        self.speed = self.speed[firstpoint:endpoint]
+        self.ax = self.ax[firstpoint:endpoint]
+        self.ay = self.ax[firstpoint:endpoint]
+        self.az = self.ax[firstpoint:endpoint]
+        self.dist = self.dist[firstpoint:endpoint]
+        self.lat = self.lat[firstpoint:endpoint]
+        self.lon = self.lon[firstpoint:endpoint]
+        self.rpm = self.rpm[firstpoint:endpoint]
+
+        self.jx = self.jx[firstpoint:endpoint]
+        self.jy = self.jy[firstpoint:endpoint]
+        self.jz = self.jz[firstpoint:endpoint]
+
+        self.stop_points()
 
     def stop_points(self):
         zeroPoints =[]

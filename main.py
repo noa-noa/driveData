@@ -15,3 +15,6 @@ if __name__ != "__main__":
     division = []
     for d in drivers:
         division+=d.divide_drivings()
+
+    drivegps(drivers)
+    

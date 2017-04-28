@@ -1,6 +1,6 @@
 from Drive import *
 import numpy as np
-from math import sin, cos, acos, radians
+from math import sin, cos, acos, radians, sqrt
 
 def standardization(st):
     import scipy.stats as sp
@@ -31,8 +31,28 @@ def drivegps(drivers):
     distGps = []
     for d in drivers:
         rng = pd.date_range(d.lat.index[0],periods=len(d.lat)-1,freq='1000L')
-        distGps.append(pd.Series(gps2dist(d.lat.values,d.lon.values),rng))
-    return distGps
+        d.distGps = pd.Series(gps2dist(d.lat.values,d.lon.values),rng)
+
+    s  = []
+    for d in drivers:
+        d.div = t(d.distGps,d)
+
+def t(distGps,driver):
+    ac  =  ((driver.ax)**2 +(driver.ay)**2)
+    rng = pd.date_range(driver.lat.index[0],periods=len(driver.ax),freq='200L')
+    ac = [sqrt(a) for a in ac]
+    div = (distGps*3600)-driver.speed
+    return pd.Series(ac,rng),div
+
+def downsamp(series,period):
+    time = series.index[0]
+    rng = pd.date_range(time,periods=period,freq='1000L')
+    data = pd.Series(np.nan,index=rng)
+    from scipy.interpolate import interp1d
+    f = interp1d(series.index.values.astype('d'),series,kind='cubic')
+    data[:] = f(data.index.values.astype("d"))
+    return data
+
 def gps2dist(lat,lon):
     dist = []
     for i in range(len(lat)-1):
