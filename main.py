@@ -11,7 +11,8 @@ if __name__ != "__main__":
         drive = d.divide_drive()
         drives[0]+=drive[0]
         drives[1]+=drive[1]
-    f  = ft.features(drives[0])
+    f  = np.array(ft.features(drives[0])),np.array(ft.features(drives[1]))
+
     division = []
     for d in drivers:
         division+=d.divide_drivings()
