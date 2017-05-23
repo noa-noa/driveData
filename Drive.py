@@ -52,8 +52,8 @@ class Drive():
         endpoint= self.speed.index[self.stop[-1]]+1
         self.speed = self.speed[firstpoint:endpoint]
         self.ax = self.ax[firstpoint:endpoint]
-        self.ay = self.ax[firstpoint:endpoint]
-        self.az = self.ax[firstpoint:endpoint]
+        self.ay = self.ay[firstpoint:endpoint]
+        self.az = self.az[firstpoint:endpoint]
         self.dist = self.dist[firstpoint:endpoint]
         self.lat = self.lat[firstpoint:endpoint]
         self.lon = self.lon[firstpoint:endpoint]
@@ -127,8 +127,8 @@ class Drive():
         jx = self.jx[sp.index[0]:sp.index[-1]]
         az = self.az[sp.index[0]:sp.index[-1]]
         jz = self.jz[sp.index[0]:sp.index[-1]]
-        ay = self.ax[sp.index[0]:sp.index[-1]]
-        jy = self.jx[sp.index[0]:sp.index[-1]]
+        ay = self.ay[sp.index[0]:sp.index[-1]]
+        jy = self.jy[sp.index[0]:sp.index[-1]]
 
         return [sp,ax,jx,az,jz,ay,jy]
 
@@ -140,6 +140,25 @@ class Drive():
         jx = self.jx[time_start:time_stop]
         az = self.az[time_start:time_stop]
         jz = self.jz[time_start:time_stop]
-        ay = self.ax[time_start:time_stop]
-        jy = self.jx[time_start:time_stop]
+        ay = self.ay[time_start:time_stop]
+        jy = self.jy[time_start:time_stop]
         return [sp,ax,jx,az,jz,ay,jy]
+    def ac_dec(self):
+        index = self.search_steady_state()
+        ac = []
+        for i in range(len(index)-1):
+             if ((index[i+1]-index[i]).total_seconds() > 0.2):
+                 ac.append(self.ax[index[i]:index[i+1]+1])
+        return ac
+    def search_steady_state(self):
+        index =[]
+        for i in range(len(self.speed)-1):
+            if (self.speed[i] == self.speed[i+1]):
+                index.append(self.speed.index[i+1])
+        for i in range(len(self.ax)-1):
+            if (self.ax[i] >= 0 and self.ax[i+1] < 0):
+                index.append(self.ax.index[i+1])
+            elif (self.ax[i] <= 0 and self.ax[i+1] > 0):
+                index.append(self.ax.index[i+1])
+        list(set(index)).sort()
+        return index
