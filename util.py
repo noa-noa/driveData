@@ -53,6 +53,15 @@ def downsamp(series,period):
     data[:] = f(data.index.values.astype("d"))
     return data
 
+def upsamp(series,period):
+    time = series.index[0]
+    rng = pd.date_range(time,periods=period,freq='200L')
+    data = pd.Series(np.nan,index=rng)
+    from scipy.interpolate import interp1d
+    f = interp1d(series.index.values.astype('d'),series)
+    data[:] = f(data.index.values.astype("d"))
+    return data
+    
 def gps2dist(lat,lon):
     dist = []
     for i in range(len(lat)-1):
