@@ -2,3 +2,4 @@ py2dr
 *.pyc
 *~
 json/*
+ignore/*
